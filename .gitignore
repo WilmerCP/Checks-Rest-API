@@ -1,3 +1,4 @@
 .data/
 lib/config.js
 https/
+.logs/

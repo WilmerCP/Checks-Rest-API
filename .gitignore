@@ -2,3 +2,6 @@
 lib/config.js
 https/
 .logs/
+*.jpg
+*.png
+favicon.ico

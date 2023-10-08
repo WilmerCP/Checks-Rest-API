@@ -1,0 +1,32 @@
+<!--Cabecera única para toda la web -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{head_titulo} | {global_nombreApp}</title>
+    <base href="{global_baseUrl}">
+    <link rel="stylesheet" href="public/app.css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <script src="public/app.js"></script>
+</head>
+
+<body class="{body_class}">
+    <div class="contenedor">
+        <header id="header">
+
+            <a href="/" class="logo"><img src="./public/logo.png" alt="Logo de Arepita"></a>
+
+            <span class="nombre_web">AREPITA</span>
+
+            <nav>
+                <a href="/">Inicio</a>
+                <a href="/" class="LoggedOut">Iniciar Sesión</a>
+                <a href="/" class="LoggedOut">Registrarme</a>
+                <a href="/" class="LoggedIn">Cerrar Sesión</a>
+                <a href="/" class="LoggedIn">Dashboard</a>
+                <a href="/" class="LoggedIn">Perfil</a>
+            </nav>
+
+        </header>

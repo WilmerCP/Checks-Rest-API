@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{head_titulo} | {global_nombreApp}</title>
     <base href="{global_baseUrl}">
-    <link rel="stylesheet" href="public/app.css">
+    <link rel="stylesheet" href="{hoja_estilos}">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <script src="public/app.js"></script>
 </head>
@@ -22,8 +22,8 @@
 
             <nav>
                 <a href="/">Inicio</a>
-                <a href="/" class="LoggedOut">Iniciar Sesión</a>
-                <a href="/" class="LoggedOut">Registrarme</a>
+                <a href="/iniciar-sesion" class="LoggedOut">Iniciar Sesión</a>
+                <a href="/create-account" class="LoggedOut">Registrarme</a>
                 <a href="/" class="LoggedIn">Cerrar Sesión</a>
                 <a href="/" class="LoggedIn">Dashboard</a>
                 <a href="/" class="LoggedIn">Perfil</a>

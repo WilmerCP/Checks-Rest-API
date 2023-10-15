@@ -51,7 +51,7 @@ app.client.request = async function (metodo, path, headers, queryStringObject, p
     payload = typeof (payload) == 'object' ? payload : {};
     callback = typeof (callback) == 'function' ? callback : false;
     headers['Content-Type'] = 'application/json';
-    headers.token = app.config.sessionToken;
+    headers.token = app.config.sessionToken.id;
 
     let requestUrl = path;
     let contador = 0;
@@ -189,7 +189,6 @@ app.procesarRespuesta = function (formId, enviado, recibido) {
 
     if (formId == 'iniciarSesion') {
 
-        console.log(recibido);
         app.setToken(recibido);
         app.logInContent(true);
         window.location = 'checks/all';
@@ -211,7 +210,7 @@ app.setToken = function (token) {
 
 app.renewToken = function () {
 
-    let token = app.config.sessionToken();
+    let token = app.config.sessionToken;
 
     if (token) {
 
@@ -242,11 +241,13 @@ app.renewToken = function () {
 
 }
 
+
+
 app.sessionLoop = function () {
 
     setInterval(function () {
 
-        renewToken();
+        app.renewToken();
 
     }, 1000 * 60);
 
@@ -301,9 +302,32 @@ app.logInContent = function (add) {
 
     } else {
 
-        body.classList.remove('loggedIn')
+        body.classList.add('loggedOut')
 
     }
+
+}
+
+app.bindLogOutButton = function(){
+
+    let boton = document.getElementById('logOutButton');
+
+    boton.addEventListener('click',(e)=>{
+
+        e.preventDefault();
+
+        app.client.request('DELETE','api/tokens',undefined,undefined,undefined,(status,err)=>{
+
+            app.setToken(false);
+            app.logInContent(false);
+
+            window.location = '/';
+
+        })
+
+
+    });
+
 
 }
 
@@ -314,5 +338,7 @@ app.init = function () {
     app.getSessionToken();
 
     app.sessionLoop();
+
+    app.bindLogOutButton();
 
 }

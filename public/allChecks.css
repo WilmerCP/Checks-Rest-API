@@ -74,7 +74,37 @@ nav a {
     display: inline-block;
     color: white;
     font-weight: bold;
+    display: none;
 
+}
+
+.loggedIn header nav a.loggedIn{
+
+    display: inline-block;
+
+}
+
+.loggedIn header nav a.loggedOut{
+
+    display: none;
+
+}
+
+.loggedOut header nav a.loggedIn{
+
+    display: none;
+
+}
+
+.loggedOut header nav a.loggedOut{
+
+    display: inline-block;
+
+}
+
+#irAInicio{
+
+    display: inline-block;
 }
 
 h1{

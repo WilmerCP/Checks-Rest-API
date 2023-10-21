@@ -1,34 +1,10 @@
 //Javascript del lado del cliente
 
-//Cambio de color del header al hacer scroll
-
 window.onload = function () {
 
     let pagina = document.querySelector('body').className;
 
-    if (pagina == 'index') {
-
-        let header = document.getElementById('header');
-
-        window.addEventListener('scroll', () => {
-
-            if (window.scrollY > 0) {
-
-                header.style.backgroundColor = '#6A9C89';
-                header.style.height = '3.2em';
-
-            } else {
-
-                header.style.backgroundColor = 'rgba(0, 0, 0, 0.144)';
-                header.style.height = '5em';
-
-            }
-
-
-        })
-    }
-
-    app.init();
+    app.init(pagina);
 
 }
 
@@ -40,6 +16,15 @@ app.config = {
 
 }
 
+app.estilos = {
+
+    'colorError': 'rgb(211, 124, 124)',
+    'bordeError': '1px solid rgb(247, 15, 15)',
+    'colorCorrecto': '#67f58d',
+    'bordeCorrecto': '1px solid #0b9931'
+
+}
+
 app.client = {};
 
 app.client.request = async function (metodo, path, headers, queryStringObject, payload, callback) {
@@ -48,7 +33,7 @@ app.client.request = async function (metodo, path, headers, queryStringObject, p
     path = typeof (path) == 'string' ? path : '/';
     headers = typeof (headers) == 'object' && headers != null ? headers : {};
     queryStringObject = typeof (queryStringObject) == 'object' && queryStringObject != null ? queryStringObject : {};
-    payload = typeof (payload) == 'object' ? payload : {};
+    payload = typeof (payload) == 'object' ? JSON.stringify(payload) : undefined;
     callback = typeof (callback) == 'function' ? callback : false;
     headers['Content-Type'] = 'application/json';
     headers.token = app.config.sessionToken.id;
@@ -79,7 +64,7 @@ app.client.request = async function (metodo, path, headers, queryStringObject, p
     let respuesta = await fetch(requestUrl, {
         'method': metodo,
         'headers': headers,
-        'body': JSON.stringify(payload)
+        'body': payload
     })
 
     let objetoRespuesta = await respuesta.json();
@@ -95,106 +80,147 @@ app.client.request = async function (metodo, path, headers, queryStringObject, p
 //funcion para recoger los datos del formulario manualmente
 app.bindForms = function () {
 
-    if (document.querySelector('form')) {
-        document.querySelector('form').addEventListener('submit', function (e) {
+    let formularios = document.querySelectorAll('form');
 
-            e.preventDefault();
-            let formId = this.id;
-            let path = this.action;
-            let metodo = this.method.toUpperCase();
+    if (formularios) {
 
-            //ocultamos el mensaje previo de error en caso de haberse mostrado
-            let errormsj = document.getElementById('error_msj');
-            errormsj.style.display = "none";
+        for (let i = 0; i < formularios.length; i++) {
 
-            //obtenemos datos del formulario
-            let elementos = this.elements;
+            formularios[i].addEventListener('submit', function (e) {
 
-            let payload = {};
+                e.preventDefault();
+                let formId = this.id;
+                let path = this.action;
 
-            for (let i = 0; i < elementos.length; i++) {
+                //Seteamos el metodo adecuado
 
-                if (elementos[i].type !== 'submit') {
+                let casosPUT = ['profileEdit', 'changePassword'];
+                let metodo = casosPUT.includes(formId) ? 'PUT' : this.method.toUpperCase();
 
-                    let valor = elementos[i].type == 'checkbox' ? elementos[i].checked : elementos[i].value;
-                    payload[elementos[i].name] = valor;
+                //ocultamos el mensaje previo de error en caso de haberse mostrado
+                let errormsj = this.previousElementSibling;
+                errormsj.style.display = "none";
 
-                }
+                //obtenemos datos del formulario
+                let elementos = this.elements;
 
-            }
+                let payload = {};
 
-            //verificamos si las contraseñas coinciden
-            if (payload.tekrar != payload.password && payload.tekrar !== undefined) {
+                for (let i = 0; i < elementos.length; i++) {
 
-                errormsj.innerHTML = 'Las contraseñas que ingresaste no coinciden';
-                errormsj.style.display = 'initial';
+                    if (elementos[i].type !== 'submit') {
 
-            } else {
-                //mandemos la peticion
-                app.client.request(metodo, path, undefined, undefined, payload, (status, respuesta) => {
-
-                    if (status !== 200) {
-
-                        errormsj.innerHTML = respuesta.Error;
-                        errormsj.style.display = 'initial';
-
-                    } else {
-
-                        app.procesarRespuesta(formId, payload, respuesta);
+                        let valor = elementos[i].type == 'checkbox' ? elementos[i].checked : elementos[i].value;
+                        payload[elementos[i].name] = valor;
 
                     }
 
+                }
 
-                });
+                if (metodo == 'PUT') {
+
+                    payload.numero = app.config.sessionToken.numero;
+
+                }
+
+                //verificamos si las contraseñas coinciden
+                if (payload.tekrar != payload.password && payload.tekrar !== undefined) {
+
+                    errormsj.innerHTML = 'Las contraseñas que ingresaste no coinciden';
+                    errormsj.style.display = 'initial';
+                    errormsj.style.border = app.estilos.bordeError;
+                    errormsj.style.backgroundColor = app.estilos.colorError;
+
+                } else {
+                    //mandemos la peticion
+                    app.client.request(metodo, path, undefined, undefined, payload, (status, respuesta) => {
+
+                        if (status !== 200) {
+
+                            errormsj.innerHTML = respuesta.Error;
+                            errormsj.style.display = 'initial';
+                            errormsj.style.border = app.estilos.bordeError;
+                            errormsj.style.backgroundColor = app.estilos.colorError;
+
+                        } else {
+
+                            app.procesarRespuesta(formId, payload, respuesta, errormsj);
+
+                        }
 
 
-            }
+                    });
 
 
-        })
+                }
+
+
+            })
+
+        }
 
     }
 }
 
 //Comportamiento a realizar luego de recibir respuesta positiva de un formulario
-app.procesarRespuesta = function (formId, enviado, recibido) {
+app.procesarRespuesta = function (formId, enviado, recibido, errormsj) {
 
-    if (formId == 'accountCreate') {
+    switch (formId) {
+        case 'accountCreate':
 
-        let payload = {
+            let payload = {
 
-            'numero': enviado.numero,
-            'password': enviado.password
-
-        }
-        //Iniciamos sesion de una vez al nuevo usuario
-        app.client.request('POST', 'api/tokens', undefined, undefined, payload, (status, token) => {
-
-            if (status == 200 && token) {
-
-                app.setToken(token);
-                app.logInContent(true);
-                window.location = 'checks/all';
-
-            } else {
-
-                errormsj.innerHTML = 'Hubo un error al iniciar sesion, pruebe manualmente';
-                errormsj.style.display = 'initial';
+                'numero': enviado.numero,
+                'password': enviado.password
 
             }
+            //Iniciamos sesion de una vez al nuevo usuario
+            app.client.request('POST', 'api/tokens', undefined, undefined, payload, (status, token) => {
 
-        });
+                if (status == 200 && token) {
+
+                    app.setToken(token);
+                    app.logInContent(true);
+                    window.location = 'checks/all';
+
+                } else {
+
+                    errormsj.innerHTML = 'Hubo un error al iniciar sesion, pruebe manualmente';
+                    errormsj.style.display = 'initial';
+
+                }
+
+            });
+
+            break;
+
+        case 'iniciarSesion':
+
+            app.setToken(recibido);
+            app.logInContent(true);
+            window.location = 'checks/all';
+
+            break;
+
+        case 'profileEdit':
+
+            errormsj.innerHTML = 'Se ha actualizado tu perfil correctamente';
+            errormsj.style.display = 'initial';
+            errormsj.style.backgroundColor = app.estilos.colorCorrecto;
+            errormsj.style.border = app.estilos.bordeCorrecto;
+
+            break;
+
+        case 'changePassword':
+
+            errormsj.innerHTML = 'Se ha cambiado tu contraseña, ¡no la olvides!';
+            errormsj.style.display = 'initial';
+            errormsj.style.backgroundColor = app.estilos.colorCorrecto;
+            errormsj.style.border = app.estilos.bordeCorrecto;
+
+            break;
 
     }
-
-    if (formId == 'iniciarSesion') {
-
-        app.setToken(recibido);
-        app.logInContent(true);
-        window.location = 'checks/all';
-
-    }
-
 
 }
 
@@ -215,7 +241,7 @@ app.renewToken = function () {
     if (token) {
 
         let restante = token.expira - Date.now();
-        let cinco = 1000 * 60 * 5;
+        let cinco = 1000 * 60;
 
         if (restante < cinco) {
 
@@ -229,6 +255,10 @@ app.renewToken = function () {
 
                     app.setToken(newToken);
                     console.log('Se ha renovado la sesión');
+
+                } else {
+
+                    app.setToken(false);
 
                 }
 
@@ -260,16 +290,25 @@ app.getSessionToken = function () {
 
     let myToken = localStorage.getItem('token');
 
-    if (typeof(myToken) !== 'undefined') {
+    if (typeof (myToken) !== 'undefined') {
 
         try {
 
             let tokenObj = JSON.parse(myToken);
-            app.config.sessionToken = tokenObj;
 
             if (typeof (tokenObj) == 'object') {
 
-                app.logInContent(true);
+                if (tokenObj.expira > Date.now()) {
+
+                    app.logInContent(true);
+                    app.setToken(tokenObj);
+
+                } else {
+
+                    app.logInContent(false);
+                    app.setToken(false);
+
+                }
 
             } else {
 
@@ -279,7 +318,7 @@ app.getSessionToken = function () {
 
         } catch (error) {
 
-            app.config.sessionToken = false;
+            app.setToken(false);
             app.logInContent(false);
 
         }
@@ -308,15 +347,15 @@ app.logInContent = function (add) {
 
 }
 
-app.bindLogOutButton = function(){
+app.bindLogOutButton = function () {
 
     let boton = document.getElementById('logOutButton');
 
-    boton.addEventListener('click',(e)=>{
+    boton.addEventListener('click', (e) => {
 
         e.preventDefault();
 
-        app.client.request('DELETE','api/tokens',undefined,undefined,undefined,(status,err)=>{
+        app.client.request('DELETE', 'api/tokens', undefined, undefined, undefined, (status, err) => {
 
             app.setToken(false);
             app.logInContent(false);
@@ -331,7 +370,75 @@ app.bindLogOutButton = function(){
 
 }
 
-app.init = function () {
+//Rellenar el formulario de editar usuario
+
+app.loadUserInfo = function (pagina) {
+
+    if (pagina == 'accountEdit') {
+
+        let params = {
+            'numero': app.config.sessionToken.numero
+        }
+
+        app.client.request('GET', 'api/users', undefined, params, undefined, function (status, user) {
+
+            if (status == 200) {
+
+                let campoNombre = document.getElementById('nombre');
+                let campoApellido = document.getElementById('apellido');
+
+                campoNombre.value = user.nombre;
+                campoApellido.value = user.apellido;
+
+            } else {
+
+                let mensaje = document.getElementById('editor_msj');
+                mensaje.innerHTML = 'Hubo un error al leer los datos de la cuenta';
+                mensaje.style.display = 'initial';
+                mensaje.style.backgroundColor = app.estilos.colorError;
+                mensaje.style.border = app.estilos.bordeError;
+
+
+
+            }
+
+
+        });
+    }
+}
+
+
+//Cambio de color del header en el index al hacer scroll
+
+app.colorHeader = function (pagina) {
+
+    if (pagina == 'index') {
+
+        let header = document.getElementById('header');
+
+        window.addEventListener('scroll', () => {
+
+            if (window.scrollY > 0) {
+
+                header.style.backgroundColor = '#6A9C89';
+                header.style.height = '3.2em';
+
+            } else {
+
+                header.style.backgroundColor = 'rgba(0, 0, 0, 0.144)';
+                header.style.height = '5em';
+
+            }
+
+
+        })
+    }
+
+}
+
+app.init = function (pagina) {
+
+    app.colorHeader(pagina);
 
     app.bindForms();
 
@@ -340,5 +447,7 @@ app.init = function () {
     app.sessionLoop();
 
     app.bindLogOutButton();
+
+    app.loadUserInfo(pagina);
 
 }

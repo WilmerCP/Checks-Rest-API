@@ -1,0 +1,57 @@
+<!-- Pagina de ajustes de la cuenta -->
+
+<div class="contenido">
+
+    <h1>Mi cuenta</h1>
+
+    <div class="zona_edicion">
+
+    <div class="form_wrapper">
+
+        <h2>Editar Perfil</h2>
+
+        <div id="editor_msj"></div>
+
+        <form action="/api/users" method="PUT" id="profileEdit" >
+
+            <div class="input_wrapper">
+                <input type="text" name="nombre" id="nombre" required>
+                <label for="nombre">Nombre</label>
+            </div>
+            <div class="input_wrapper">
+                <input type="text" name="apellido" id="apellido" required>
+                <label for="apellido">Apellido</label>
+            </div>
+
+            <button type="submit" class="boton_envio">Enviar</button>
+
+
+        </form>
+    </div>
+
+    <div class="form_wrapper">
+
+        <h2>Cambiar Contraseña</h2>
+
+        <div id="clave_msj"></div>
+
+        <form action="/api/users" method="PUT" id="changePassword" >
+
+            <div class="input_wrapper">
+                <input type="text" name="password" id="password" required>
+                <label for="password">Nueva contraseña</label>
+            </div>
+            <div class="input_wrapper">
+                <input type="text" name="tekrar" id="tekrar" required>
+                <label for="tekrar">Repetir contraseña</label>
+            </div>
+
+            <button type="submit" class="boton_envio">Enviar</button>
+
+
+        </form>
+    </div>
+
+    </div>
+
+</div>

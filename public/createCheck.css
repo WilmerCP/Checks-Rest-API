@@ -109,28 +109,13 @@ nav a {
 
 .contenido{
 
+    display: flex;
+    justify-content: center;
     background-color:  rgb(240, 240, 240);
     background-image: url('arepa.png');
     background-position: 200%  0%;
     background-size: 80%;
     background-repeat: no-repeat;
-    font-size: 15px;
-    padding-top: 2em;
-    padding-bottom: 2em;
-}
-
-h1{
-
-    font-size: 1.8em;  
-    text-align: center;
-    margin-bottom: 1em;
-
-}
-
-.zona_edicion{
-
-    display: flex;
-    justify-content: space-around;
     padding: 2.3em 0em 2.3em 0em;
     font-size: 15px;
 }
@@ -152,8 +137,10 @@ h1{
 
 }
 
-#editor_msj, #clave_msj{
+#error_msj{
 
+    background-color: rgb(211, 124, 124);
+    border: 1px solid rgb(247, 15, 15);
     border-radius: 2px;
     padding: 5px;
     font-size: 0.9em;
@@ -161,7 +148,7 @@ h1{
     margin-bottom: 2em;
 }
 
-h2{
+h1{
 
     font-size: 1.5em;  
     text-align: center;
@@ -171,76 +158,65 @@ h2{
 
 .input_wrapper{
 
-    display: block;
+    display: flex;
     width: 100%;
-    position: relative;
     margin-bottom: 2em;
+    flex-direction: column;
+    align-items: start;
 
 
 }
 
 label{
 
-    font-size: 1em;
-    position: absolute;
-    top: 50%;
-    transform: translate(0%,-50%);
-    transition: .4s;
+    font-size: 1.1em;
+    margin-bottom: 1em;
 
 }
 
-input{
+input[type="text"]{
 
-    width: 100%;
+    width: calc(100% - 8px);
     height: 2.2em;
-    border: none;
-    border-bottom: 1px solid green;
     font-size: 0.9em;
     padding: 2px;
 
 }
 
-input:focus{
+select{
+
+    width: 100%;
+    height: 2.9em;
+    font-size: 0.9em;
+}
+
+input:focus, select:focus{
 
     outline: none;
 
 }
 
-.input_wrapper input:focus~label,
-.input_wrapper input:valid~label,
-.input_wrapper input:hover~label{
+.checkbox_group{
 
-    top: -5px;
-}
-
-.wrapper_terminos{
-
-    position: initial;
     display: flex;
-    flex-direction: column;
-    margin-bottom: 0px;
+    flex-wrap: wrap;
+    align-items: start;
+    font-size: 1.05em;
 
 }
 
-.wrapper_terminos label{
+input[type="checkbox"]{
 
-    position: initial;
-    transform: none;
-
-}
-
-.wrapper_terminos input{
-
-    align-self: flex-start;
-    text-align: start;
-    width: 1.6em;
-    margin-top: 6px;
-    margin-left: 1em;
-
+    width: 1.3em;
+    height: 1.3em;
+    margin-right: 5px;
+    margin-left: 8px;
+    margin-bottom: 6px;
 
 }
 
-.boton_envio, #eliminarCuenta{
+
+.boton_envio{
 
     align-self: center;
     justify-self: center;
@@ -256,40 +232,9 @@ input:focus{
     padding-right: 25px;
 }
 
-.boton_envio:hover , #eliminarCuenta:hover{
+.boton_envio:hover{
 
     background-color: #3f7055;
-
-}
-
-.zona_eliminar_cuenta{
-
-    padding: 2.2em;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    background-color: rgb(253, 253, 246);
-    max-width: 60%;
-    margin: auto;
-    -webkit-box-shadow: 0px 0px 20px -6px rgba(0,0,0,0.75);
-    -moz-box-shadow: 0px 0px 20px -6px rgba(0,0,0,0.75);
-    box-shadow: 0px 0px 20px -6px rgba(0,0,0,0.75);
-
-}
-
-.zona_eliminar_cuenta h3{
-
-    font-size: 1.5em;
-    margin-bottom: 1em;
-
-}
-
-.zona_eliminar_cuenta p{
-
-    font-size: 1.1em;
-    color: red;
-    text-align: center;
-    margin-bottom: 1em;
 
 }
 

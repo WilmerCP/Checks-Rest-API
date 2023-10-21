@@ -1,0 +1,64 @@
+<!-- Pagina para crear checks -->
+
+<div class="contenido">
+
+    <div class="form_wrapper">
+
+        <h1>Create a check</h1>
+
+        <div id="error_msj"></div>
+
+        <form action="/api/checks" method="POST" id="createCheck" >
+
+            <div class="input_wrapper">
+                <label for="protocolo">Protocol</label>
+                <select name="protocolo" id="protocolo">
+                    <option value="http" selected>http://</option>
+                    <option value="https">https://</option>
+                </select>
+            </div>
+            <div class="input_wrapper">
+                <label for="url">URL (Not including protocol)</label>
+                <input type="text" name="url" id="url" required>
+            </div>
+            <div class="input_wrapper">
+                <label>Success codes (HTTP codes that should be considered as 'up')</label>
+                <div class="checkbox_group">
+                    <input type="checkbox" name="validCodes" value="200" checked>200
+                    <input type="checkbox" name="validCodes" value="201" checked>201
+                    <input type="checkbox" name="validCodes" value="301">301
+                    <input type="checkbox" name="validCodes" value="302">302
+                    <input type="checkbox" name="validCodes" value="400">400
+                    <input type="checkbox" name="validCodes" value="403">403
+                    <input type="checkbox" name="validCodes" value="404">404
+                    <input type="checkbox" name="validCodes" value="406">406
+                    <input type="checkbox" name="validCodes" value="500">500
+                </div>
+            </div>
+            <div class="input_wrapper">
+                <label for="metodo">Method</label>
+                <select name="metodo" id="metodo">
+                    <option value="get" selected>GET</option>
+                    <option value="post">POST</option>
+                    <option value="put">PUT</option>
+                    <option value="delete">DELETE</option>
+                </select>
+            </div>
+            <div class="input_wrapper">
+                <label for="timeoutSeconds">Timeout seconds</label>
+                <select name="timeoutSeconds" id="timeoutSeconds">
+                    <option value="1" selected>1 second</option>
+                    <option value="2">2 seconds</option>
+                    <option value="3">3 seconds</option>
+                    <option value="4">4 seconds</option>
+                    <option value="5">5 seconds</option>
+                </select>
+            </div>
+
+            <button type="submit" class="boton_envio">Enviar</button>
+
+
+        </form>
+    </div>
+
+</div>

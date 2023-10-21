@@ -78,7 +78,7 @@ app.client.request = async function (metodo, path, headers, queryStringObject, p
 }
 
 //funcion para recoger los datos del formulario manualmente
-app.bindForms = function () {
+app.bindForms = function (pagina) {
 
     let formularios = document.querySelectorAll('form');
 
@@ -106,16 +106,33 @@ app.bindForms = function () {
 
                 let payload = {};
 
+                payload.validCodes = [];
+
                 for (let i = 0; i < elementos.length; i++) {
 
                     if (elementos[i].type !== 'submit') {
 
-                        let valor = elementos[i].type == 'checkbox' ? elementos[i].checked : elementos[i].value;
-                        payload[elementos[i].name] = valor;
+                        let valor = elementos[i].type == 'checkbox' && elementos[i].name !== 'validCodes' ? elementos[i].checked : elementos[i].value;
+                        
+                        valor = elementos[i].id == "timeoutSeconds" ? parseInt(valor) : valor;
+
+                        if(elementos[i].name == "validCodes"){
+
+                            if(elementos[i].checked){
+                            payload.validCodes.push(parseInt(valor));
+                            }
+
+                        }else{
+
+                            payload[elementos[i].name] = valor;
+
+                        }
 
                     }
 
                 }
+
+                console.log(payload)
 
                 if (metodo == 'PUT') {
 
@@ -181,7 +198,7 @@ app.procesarRespuesta = function (formId, enviado, recibido, errormsj) {
 
                     app.setToken(token);
                     app.logInContent(true);
-                    window.location = 'checks/all';
+                    window.location = 'checks';
 
                 } else {
 
@@ -198,7 +215,7 @@ app.procesarRespuesta = function (formId, enviado, recibido, errormsj) {
 
             app.setToken(recibido);
             app.logInContent(true);
-            window.location = 'checks/all';
+            window.location = 'checks';
 
             break;
 
@@ -347,6 +364,8 @@ app.logInContent = function (add) {
 
 }
 
+//Boton de cerrar sesion
+
 app.bindLogOutButton = function () {
 
     let boton = document.getElementById('logOutButton');
@@ -367,6 +386,41 @@ app.bindLogOutButton = function () {
 
     });
 
+
+}
+
+//Boton de eliminar cuenta
+
+app.bindEliminateAccountButton = function (pagina) {
+
+
+    if (pagina == 'accountEdit') {
+        let boton = document.getElementById('eliminarCuenta');
+
+        boton.addEventListener('click', (e) => {
+
+            e.preventDefault();
+
+            app.client.request('DELETE', 'api/users', undefined, { 'numero': app.config.sessionToken.numero }, undefined, (status, err) => {
+
+                if (status == 200) {
+
+                    app.setToken(false);
+                    app.logInContent(false);
+
+                    window.location = '/';
+
+                } else {
+
+                    alert(err);
+
+                }
+
+            })
+
+
+        });
+    }
 
 }
 
@@ -449,5 +503,7 @@ app.init = function (pagina) {
     app.bindLogOutButton();
 
     app.loadUserInfo(pagina);
+
+    app.bindEliminateAccountButton(pagina);
 
 }

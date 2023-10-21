@@ -2,13 +2,13 @@
 
 <div class="contenido">
 
-    <h1>Mi cuenta</h1>
+    <h1>My Account</h1>
 
     <div class="zona_edicion">
 
     <div class="form_wrapper">
 
-        <h2>Editar Perfil</h2>
+        <h2>Edit my profile</h2>
 
         <div id="editor_msj"></div>
 
@@ -16,14 +16,14 @@
 
             <div class="input_wrapper">
                 <input type="text" name="nombre" id="nombre" required>
-                <label for="nombre">Nombre</label>
+                <label for="nombre">Name</label>
             </div>
             <div class="input_wrapper">
                 <input type="text" name="apellido" id="apellido" required>
-                <label for="apellido">Apellido</label>
+                <label for="apellido">Surname</label>
             </div>
 
-            <button type="submit" class="boton_envio">Enviar</button>
+            <button type="submit" class="boton_envio">Update</button>
 
 
         </form>
@@ -31,7 +31,7 @@
 
     <div class="form_wrapper">
 
-        <h2>Cambiar Contraseña</h2>
+        <h2>Change my password</h2>
 
         <div id="clave_msj"></div>
 
@@ -39,19 +39,26 @@
 
             <div class="input_wrapper">
                 <input type="text" name="password" id="password" required>
-                <label for="password">Nueva contraseña</label>
+                <label for="password">New password</label>
             </div>
             <div class="input_wrapper">
                 <input type="text" name="tekrar" id="tekrar" required>
-                <label for="tekrar">Repetir contraseña</label>
+                <label for="tekrar">Repeat password</label>
             </div>
 
-            <button type="submit" class="boton_envio">Enviar</button>
+            <button type="submit" class="boton_envio">Update</button>
 
 
         </form>
     </div>
 
+    </div>
+
+    <div class="zona_eliminar_cuenta">
+
+        <h3>Delete my account</h3>
+        <p>Be careful! once you press the button, you will not ve able to recover your checks. Don't press it by mistake.</p>
+        <button id="eliminarCuenta">Delete my account</button>
     </div>
 
 </div>

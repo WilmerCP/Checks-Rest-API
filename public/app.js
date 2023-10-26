@@ -94,7 +94,7 @@ app.bindForms = function (pagina) {
 
                 //Seteamos el metodo adecuado
 
-                let casosPUT = ['profileEdit', 'changePassword'];
+                let casosPUT = ['profileEdit', 'changePassword', 'editCheck'];
                 let metodo = casosPUT.includes(formId) ? 'PUT' : this.method.toUpperCase();
 
                 //ocultamos el mensaje previo de error en caso de haberse mostrado
@@ -131,8 +131,6 @@ app.bindForms = function (pagina) {
                     }
 
                 }
-
-                console.log(payload)
 
                 if (metodo == 'PUT') {
 
@@ -242,6 +240,12 @@ app.procesarRespuesta = function (formId, enviado, recibido, errormsj) {
             window.location = 'checks';
 
             break;
+
+        case 'editCheck':
+
+        window.location = 'checks';
+
+        break;
 
     }
 
@@ -500,17 +504,23 @@ app.loadChecksInfo = function () {
 
         if (status == 200) {
 
-            let checks = typeof(user.checks) == 'object' && user.checks instanceof Array && user.checks.length > 0 ? user.checks : [];
+            let checks = typeof (user.checks) == 'object' && user.checks instanceof Array && user.checks.length > 0 ? user.checks : [];
 
-            if(checks.length > 0){
+            if(checks.length == 5){
+
+                document.getElementById("boton_nuevo_check").style.display = 'none';
+
+            }
+
+            if (checks.length > 0) {
 
                 checks.forEach(checkId => {
 
                     params.checkId = checkId;
-                    
-                    app.client.request('GET', 'api/checks', undefined, params, undefined, function(status,payload){
 
-                        if(status == 200){
+                    app.client.request('GET', 'api/checks', undefined, params, undefined, function (status, payload) {
+
+                        if (status == 200) {
 
                             let tabla = document.querySelector('table');
 
@@ -526,15 +536,15 @@ app.loadChecksInfo = function () {
                             td1.innerHTML = payload.protocolo;
                             td2.innerHTML = payload.url;
                             td3.innerHTML = payload.state;
-                            td4.innerHTML = 'view/edit/delete';
+                            td4.innerHTML = "<a href=\"/checks/edit?n=" + payload.id + "\">view/edit/delete</a>";
 
-                        }else{
+                        } else {
 
                             let tabla = document.querySelector('table');
-                            let fila = tabla.insertRow(-1);  
+                            let fila = tabla.insertRow(-1);
                             let td = fila.insertCell(0);
                             td.colSpan = '5';
-                            td.innerHTML = 'There was an error while retrieving the checks';                      
+                            td.innerHTML = 'There was an error while retrieving the checks';
 
                         }
 
@@ -542,28 +552,112 @@ app.loadChecksInfo = function () {
 
                 });
 
-            }else{
+            } else {
 
                 let tabla = document.querySelector('table');
-                let fila = tabla.insertRow(-1);  
+                let fila = tabla.insertRow(-1);
                 let td = fila.insertCell(0);
                 td.colSpan = '5';
-                td.innerHTML = 'There are no checks to show';   
+                td.innerHTML = 'There are no checks to show';
 
             }
 
         } else {
 
             let tabla = document.querySelector('table');
-            let fila = tabla.insertRow(-1);  
+            let fila = tabla.insertRow(-1);
             let td = fila.insertCell(0);
             td.colSpan = '5';
-            td.innerHTML = 'There was an error while trying to find the user';   
+            td.innerHTML = 'There was an error while trying to find the user';
 
         }
 
 
     });
+
+}
+
+//Show all of the check data to the user
+app.loadEditCheck = function () {
+
+    let params = new URLSearchParams(window.location.search);
+
+    let checkId = params.get('n');
+
+    params = {
+
+        'checkId': checkId,
+    };
+
+    app.client.request('GET', 'api/checks', undefined, params, undefined, function (status, payload) {
+        
+        if (status == 200) {
+
+            let campoId = document.getElementById('checkId');
+            let campoState = document.getElementById('state');
+            let campoProtocolo = document.getElementById('protocolo');
+            let campoUrl = document.getElementById('url');
+            let campoMetodo = document.getElementById('metodo');
+            let campoSegundos = document.getElementById('timeoutSeconds');
+            let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+            campoId.value = payload.id;
+            campoState.value = payload.state;
+            campoProtocolo.value = payload.protocolo;
+            campoUrl.value = payload.url;
+            campoMetodo.value = payload.metodo;
+            campoSegundos.value = payload.timeoutSeconds;
+
+            checkboxes.forEach(function(checkbox) {
+
+                if (payload.validCodes.includes(parseInt(checkbox.value))) {
+                    checkbox.checked = true;
+                }
+            });
+
+            app.bindEliminateCheckButton(payload.id);
+
+        } else {
+
+            let mensaje = document.getElementById('editor_msj');
+            mensaje.innerHTML = 'Hubo un error al leer los datos del check';
+            mensaje.style.display = 'initial';
+            mensaje.style.backgroundColor = app.estilos.colorError;
+            mensaje.style.border = app.estilos.bordeError;
+
+        }
+
+    });
+
+}
+
+//Boton de eliminar check
+
+app.bindEliminateCheckButton = function (checkId) {
+
+    let boton = document.getElementById('boton_eliminar_check');
+
+    boton.addEventListener('click', (e) => {
+
+        e.preventDefault();
+
+        app.client.request('DELETE', 'api/checks', undefined, undefined, { 'checkId': checkId }, (status, err) => {
+
+            if (status == 200) {
+
+                window.location = '/checks';
+
+            } else {
+
+                console.log(err);
+
+            }
+
+        })
+
+
+    });
+
 
 }
 
@@ -590,6 +684,10 @@ app.init = function (pagina) {
 
         case 'index':
             app.colorHeader();
+            break;
+
+        case 'editCheck':
+            app.loadEditCheck();
             break;
 
     }

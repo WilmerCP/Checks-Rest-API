@@ -113,16 +113,16 @@ app.bindForms = function (pagina) {
                     if (elementos[i].type !== 'submit') {
 
                         let valor = elementos[i].type == 'checkbox' && elementos[i].name !== 'validCodes' ? elementos[i].checked : elementos[i].value;
-                        
+
                         valor = elementos[i].id == "timeoutSeconds" ? parseInt(valor) : valor;
 
-                        if(elementos[i].name == "validCodes"){
+                        if (elementos[i].name == "validCodes") {
 
-                            if(elementos[i].checked){
-                            payload.validCodes.push(parseInt(valor));
+                            if (elementos[i].checked) {
+                                payload.validCodes.push(parseInt(valor));
                             }
 
-                        }else{
+                        } else {
 
                             payload[elementos[i].name] = valor;
 
@@ -234,6 +234,12 @@ app.procesarRespuesta = function (formId, enviado, recibido, errormsj) {
             errormsj.style.display = 'initial';
             errormsj.style.backgroundColor = app.estilos.colorCorrecto;
             errormsj.style.border = app.estilos.bordeCorrecto;
+
+            break;
+
+        case 'createCheck':
+
+            window.location = 'checks';
 
             break;
 
@@ -391,108 +397,177 @@ app.bindLogOutButton = function () {
 
 //Boton de eliminar cuenta
 
-app.bindEliminateAccountButton = function (pagina) {
+app.bindEliminateAccountButton = function () {
+
+    let boton = document.getElementById('eliminarCuenta');
+
+    boton.addEventListener('click', (e) => {
+
+        e.preventDefault();
+
+        app.client.request('DELETE', 'api/users', undefined, { 'numero': app.config.sessionToken.numero }, undefined, (status, err) => {
+
+            if (status == 200) {
+
+                app.setToken(false);
+                app.logInContent(false);
+
+                window.location = '/';
+
+            } else {
+
+                alert(err);
+
+            }
+
+        })
 
 
-    if (pagina == 'accountEdit') {
-        let boton = document.getElementById('eliminarCuenta');
+    });
 
-        boton.addEventListener('click', (e) => {
-
-            e.preventDefault();
-
-            app.client.request('DELETE', 'api/users', undefined, { 'numero': app.config.sessionToken.numero }, undefined, (status, err) => {
-
-                if (status == 200) {
-
-                    app.setToken(false);
-                    app.logInContent(false);
-
-                    window.location = '/';
-
-                } else {
-
-                    alert(err);
-
-                }
-
-            })
-
-
-        });
-    }
 
 }
 
 //Rellenar el formulario de editar usuario
 
-app.loadUserInfo = function (pagina) {
+app.loadUserInfo = function () {
 
-    if (pagina == 'accountEdit') {
 
-        let params = {
-            'numero': app.config.sessionToken.numero
+    let params = {
+        'numero': app.config.sessionToken.numero
+    }
+
+    app.client.request('GET', 'api/users', undefined, params, undefined, function (status, user) {
+
+        if (status == 200) {
+
+            let campoNombre = document.getElementById('nombre');
+            let campoApellido = document.getElementById('apellido');
+
+            campoNombre.value = user.nombre;
+            campoApellido.value = user.apellido;
+
+        } else {
+
+            let mensaje = document.getElementById('editor_msj');
+            mensaje.innerHTML = 'Hubo un error al leer los datos de la cuenta';
+            mensaje.style.display = 'initial';
+            mensaje.style.backgroundColor = app.estilos.colorError;
+            mensaje.style.border = app.estilos.bordeError;
+
+
+
         }
 
-        app.client.request('GET', 'api/users', undefined, params, undefined, function (status, user) {
 
-            if (status == 200) {
+    });
 
-                let campoNombre = document.getElementById('nombre');
-                let campoApellido = document.getElementById('apellido');
-
-                campoNombre.value = user.nombre;
-                campoApellido.value = user.apellido;
-
-            } else {
-
-                let mensaje = document.getElementById('editor_msj');
-                mensaje.innerHTML = 'Hubo un error al leer los datos de la cuenta';
-                mensaje.style.display = 'initial';
-                mensaje.style.backgroundColor = app.estilos.colorError;
-                mensaje.style.border = app.estilos.bordeError;
-
-
-
-            }
-
-
-        });
-    }
 }
 
 
 //Cambio de color del header en el index al hacer scroll
 
-app.colorHeader = function (pagina) {
+app.colorHeader = function () {
 
-    if (pagina == 'index') {
+    let header = document.getElementById('header');
 
-        let header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
 
-        window.addEventListener('scroll', () => {
+        if (window.scrollY > 0) {
 
-            if (window.scrollY > 0) {
+            header.style.backgroundColor = '#6A9C89';
+            header.style.height = '3.2em';
 
-                header.style.backgroundColor = '#6A9C89';
-                header.style.height = '3.2em';
+        } else {
 
-            } else {
+            header.style.backgroundColor = 'rgba(0, 0, 0, 0.144)';
+            header.style.height = '5em';
 
-                header.style.backgroundColor = 'rgba(0, 0, 0, 0.144)';
-                header.style.height = '5em';
+        }
+
+
+    })
+
+}
+
+app.loadChecksInfo = function () {
+
+    let params = {
+        'numero': app.config.sessionToken.numero
+    }
+
+    app.client.request('GET', 'api/users', undefined, params, undefined, function (status, user) {
+
+        if (status == 200) {
+
+            let checks = typeof(user.checks) == 'object' && user.checks instanceof Array && user.checks.length > 0 ? user.checks : [];
+
+            if(checks.length > 0){
+
+                checks.forEach(checkId => {
+
+                    params.checkId = checkId;
+                    
+                    app.client.request('GET', 'api/checks', undefined, params, undefined, function(status,payload){
+
+                        if(status == 200){
+
+                            let tabla = document.querySelector('table');
+
+                            let fila = tabla.insertRow(-1);
+
+                            let td0 = fila.insertCell(0);
+                            let td1 = fila.insertCell(1);
+                            let td2 = fila.insertCell(2);
+                            let td3 = fila.insertCell(3);
+                            let td4 = fila.insertCell(4);
+
+                            td0.innerHTML = payload.metodo;
+                            td1.innerHTML = payload.protocolo;
+                            td2.innerHTML = payload.url;
+                            td3.innerHTML = payload.state;
+                            td4.innerHTML = 'view/edit/delete';
+
+                        }else{
+
+                            let tabla = document.querySelector('table');
+                            let fila = tabla.insertRow(-1);  
+                            let td = fila.insertCell(0);
+                            td.colSpan = '5';
+                            td.innerHTML = 'There was an error while retrieving the checks';                      
+
+                        }
+
+                    });
+
+                });
+
+            }else{
+
+                let tabla = document.querySelector('table');
+                let fila = tabla.insertRow(-1);  
+                let td = fila.insertCell(0);
+                td.colSpan = '5';
+                td.innerHTML = 'There are no checks to show';   
 
             }
 
+        } else {
 
-        })
-    }
+            let tabla = document.querySelector('table');
+            let fila = tabla.insertRow(-1);  
+            let td = fila.insertCell(0);
+            td.colSpan = '5';
+            td.innerHTML = 'There was an error while trying to find the user';   
+
+        }
+
+
+    });
 
 }
 
 app.init = function (pagina) {
-
-    app.colorHeader(pagina);
 
     app.bindForms();
 
@@ -502,8 +577,21 @@ app.init = function (pagina) {
 
     app.bindLogOutButton();
 
-    app.loadUserInfo(pagina);
+    switch (pagina) {
 
-    app.bindEliminateAccountButton(pagina);
+        case 'accountEdit':
+            app.loadUserInfo();
+            app.bindEliminateAccountButton();
+            break;
+
+        case 'allChecks':
+            app.loadChecksInfo();
+            break;
+
+        case 'index':
+            app.colorHeader();
+            break;
+
+    }
 
 }

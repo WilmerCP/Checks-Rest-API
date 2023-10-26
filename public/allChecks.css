@@ -107,6 +107,50 @@ nav a {
     display: inline-block;
 }
 
+.contenido{
+
+    display: flex;
+    justify-content: center;
+    background-color:  rgb(240, 240, 240);
+    background-image: url('arepa.png');
+    background-position: 200%  0%;
+    background-size: 80%;
+    background-repeat: no-repeat;
+    padding: 2.3em 0em 2.3em 0em;
+    font-size: 15px;
+    flex-direction: column;
+    align-items: center;
+}
+
+table{
+
+    width: 90%;
+    max-width: 1000px;
+    background-color: white;
+    margin-bottom: 1em;
+    -webkit-box-shadow: 0px 0px 20px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 20px -6px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 20px -6px rgba(0,0,0,0.75);
+
+}
+
+table th{
+
+    background-color: aliceblue;
+    text-align: center;
+    padding: 10px 1px 10px 1px;
+
+}
+
+table td{
+
+    text-align: center;
+    padding: 1px;
+    font-size: 0.9em;
+    padding: 10px 1px 10px 1px;
+
+}
+
 h1{
 
     font-size: 1.5em;  
@@ -114,6 +158,30 @@ h1{
     margin-bottom: 1em;
 
 }
+
+.boton_nuevo_check{
+
+    align-self: center;
+    justify-self: center;
+    display: block;
+    margin: auto;
+    background-color: #6A9C89;
+    border: none;
+    padding: 1em;
+    font-size: 1em;
+    transition: 0.4s;
+    border-radius: 7px;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.boton_nuevo_check:hover{
+
+    background-color: #3f7055;
+
+}
+
+
 
 footer{
 

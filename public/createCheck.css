@@ -107,10 +107,32 @@ nav a {
     display: inline-block;
 }
 
+.boton_volver{
+
+    align-self: flex-start!important;
+    display: inline-block;
+    background-color: #6A9C89;
+    border: none;
+    padding: 1em;
+    font-size: 1em;
+    transition: 0.4s;
+    border-radius: 7px;
+    padding-left: 25px;
+    padding-right: 25px;
+    margin-bottom: 1em;
+    margin-left: 15%;
+}
+
+.boton_volver:hover{
+
+    background-color: #3f7055;
+
+}
+
 .contenido{
 
     display: flex;
-    justify-content: center;
+    align-items: center;
     background-color:  rgb(240, 240, 240);
     background-image: url('arepa.png');
     background-position: 200%  0%;
@@ -118,6 +140,7 @@ nav a {
     background-repeat: no-repeat;
     padding: 2.3em 0em 2.3em 0em;
     font-size: 15px;
+    flex-direction: column;
 }
 
 .form_wrapper{

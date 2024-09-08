@@ -1,5 +1,6 @@
 const server = require('./lib/server');
 const workers = require('./lib/workers');
+const cli = require('./lib/cli');
 
 let app = {};
 
@@ -7,6 +8,12 @@ app.init = function(){
 
     server.init();
     workers.init();
+
+    setTimeout(function(){
+
+        cli.init();
+
+    },50);
 
 }
 

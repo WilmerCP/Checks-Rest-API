@@ -4,6 +4,7 @@ let _app = {}
 
 _app.tests = {}
 
+_app.tests.api = require('./api');
 _app.tests.unit = require('./unit');
 
 _app.verticalSpace = function(n){
@@ -110,8 +111,7 @@ _app.printReport = function(successes,errors,amount){
 
     }
 
-
-
+    process.exit(0);
 
 }
 
@@ -134,41 +134,46 @@ _app.runTests = function(){
                     
                     (function(){
 
-                        try{
-                            subCategory[testName](()=>{
+                        subCategory[testName]((e)=>{
+
+                            if(!e){
 
                                 console.log('\x1b[32m%s\x1b[0m',testName);
                                 successes++;
                                 counter++;
-
+    
                                 if(counter == amount){
-
+    
                                     _app.printReport(successes,errors,amount);
-
+    
                                 }
 
-                            });
-                        }catch(e){
 
-                            let error = {
+                            }else{
 
-                                test: testName,
-                                msg: e
+                                let error = {
+
+                                    test: testName,
+                                    msg: e
+    
+                                }
+    
+                                errors.push(error);
+    
+                                console.log('\x1b[31m%s\x1b[0m',testName);
+                                counter++;
+    
+                                if(counter == amount){
+    
+                                    _app.printReport(successes,errors,amount);
+    
+                                }
+
 
                             }
 
-                            errors.push(error);
 
-                            console.log('\x1b[31m%s\x1b[0m',testName);
-                            counter++;
-
-                            if(counter == amount){
-
-                                _app.printReport(successes,errors,amount);
-
-                            }
-
-                        }
+                        });
 
                     })();
                     

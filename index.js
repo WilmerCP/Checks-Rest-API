@@ -4,7 +4,7 @@ const cli = require('./lib/cli');
 
 let app = {};
 
-app.init = function(){
+app.init = function(callback){
 
     server.init();
     workers.init();
@@ -12,11 +12,16 @@ app.init = function(){
     setTimeout(function(){
 
         cli.init();
+        callback();
 
     },50);
 
 }
 
-app.init();
+if(require.main == module){
+
+    app.init(function(){});
+
+}
 
 module.exports = app;

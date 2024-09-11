@@ -182,7 +182,7 @@ a.boton_sesion{
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto;
-    background-color: rgb(56, 56, 54);
+    background-color: rgb(27, 27, 27);
     padding-top: 140px;
     padding-left: 8%;
     padding-right: 8%;

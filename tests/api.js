@@ -62,7 +62,7 @@ apiTests['/ping should return 200 status code'] = function(done){
 
         try {
 
-            assert.equal(res.statusCode,400);
+            assert.equal(res.statusCode,200);
             done(false);
 
             

@@ -1,8 +1,4 @@
 .data/
-lib/config.js
+lib/private.js
 https/
 .logs/
-*.jpg
-*.png
-favicon.ico
-*.svg
